@@ -22,17 +22,17 @@ export default function App() {
 
   // 메인 화면 팔레트 (v5 색감) — 각 항목의 대표색
   const MAIN = {
-    about:     '225,212,248', // 라일락(보라)
-    career:    '255,209,220', // 블러쉬 핑크
-    education: '190,227,248', // 스카이
-    projects:  '253,235,171', // 버터 옐로우
+    about:      '225,212,248', // 라일락(보라)
+    experience: '255,209,220', // 블러쉬 핑크
+    skill:      '190,227,248', // 스카이
+    projects:   '253,235,171', // 버터 옐로우
   };
   // 메인 화면 blob 배치 (노드 위치와 대응) — 읽는 순서를 크기로: About 큼 → Projects 작음
   const mainSpots = [
-    { x: 0.22, y: 0.30, color: MAIN.about,     r: 360 },
-    { x: 0.68, y: 0.24, color: MAIN.career,    r: 290 },
-    { x: 0.30, y: 0.68, color: MAIN.education, r: 235 },
-    { x: 0.72, y: 0.66, color: MAIN.projects,  r: 185 },
+    { x: 0.22, y: 0.30, color: MAIN.about,      r: 360 },
+    { x: 0.68, y: 0.24, color: MAIN.experience, r: 290 },
+    { x: 0.30, y: 0.68, color: MAIN.skill,      r: 235 },
+    { x: 0.72, y: 0.66, color: MAIN.projects,   r: 185 },
   ];
   // 은은한 보조 blob
   const mainFill = [
@@ -43,17 +43,17 @@ export default function App() {
 
   // 각 섹션 안의 색 계열 팔레트 — 명도 대비 크게 (업로드 이미지 기반)
   const PALETTES = {
-    about:     ['201,159,224','114,45,114','74,45,90','154,66,133'],       // 보라: 라벤더~딥퍼플~자주
-    career:    ['255,182,205','214,51,108','120,32,68','245,140,175'],     // 핑크/로즈: 밝은핑크~딥로즈
-    education: ['150,205,240','30,95,165','20,50,95','95,165,220'],        // 블루: 스카이~네이비
-    projects:  ['253,224,120','214,150,20','120,80,10','245,195,70'],      // 옐로우: 버터~앰버~브론즈
+    about:      ['201,159,224','114,45,114','74,45,90','154,66,133'],       // 보라: 라벤더~딥퍼플~자주
+    experience: ['255,182,205','214,51,108','120,32,68','245,140,175'],     // 핑크/로즈: 밝은핑크~딥로즈
+    skill:      ['150,205,240','30,95,165','20,50,95','95,165,220'],        // 블루: 스카이~네이비
+    projects:   ['253,224,120','214,150,20','120,80,10','245,195,70'],      // 옐로우: 버터~앰버~브론즈
   };
   // 섹션별 배경색 (흰 화면을 이 색으로 덮음)
   const SEC_BG = {
-    about:     '43,22,58',    // 딥 퍼플
-    career:    '58,20,40',    // 딥 로즈
-    education: '15,30,60',    // 딥 네이비
-    projects:  '50,35,8',     // 딥 브론즈
+    about:      '43,22,58',    // 딥 퍼플
+    experience: '58,20,40',    // 딥 로즈
+    skill:      '15,30,60',    // 딥 네이비
+    projects:   '50,35,8',     // 딥 브론즈
   };
   const MAIN_BG = '251,247,241'; // #FBF7F1
 
@@ -1323,12 +1323,12 @@ export default function App() {
             <div className="name">About</div>
             <div className="kr">who i am</div><div className="enter">scroll to enter →</div>
           </div>
-          <div className="node n2" data-key="career"
+          <div className="node n2" data-key="experience"
                style={{left: '68%', top: '24%'}}>
             <div className="name">Experience</div>
             <div className="kr">what moved me</div><div className="enter">scroll to enter →</div>
           </div>
-          <div className="node n3" data-key="education"
+          <div className="node n3" data-key="skill"
                style={{left: '30%', top: '63%'}}>
             <div className="name">Skill</div>
             <div className="kr">what i carry</div><div className="enter">scroll to enter →</div>
@@ -1354,7 +1354,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="section" data-key="career">
+        <div className="section" data-key="experience">
           <div className="sec-head"><div className="idx">what moved me</div><div className="title">Experience</div></div>
           <div className="sec-hint">hover an item and scroll (or click) to open</div>
           <div className="subnode" data-detail="exp-tutor" data-color="255,150,180" style={{left: '28%', top: '42%'}}>
@@ -1368,7 +1368,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="section" data-key="education">
+        <div className="section" data-key="skill">
           <div className="sec-head"><div className="idx">what i carry</div><div className="title">Skill</div></div>
           <div className="sec-hint">hover an item and scroll (or click) to open</div>
           <div className="subnode" data-detail="skill-design" data-color="150,205,240" style={{left: '28%', top: '42%'}}>

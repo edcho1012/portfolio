@@ -8,19 +8,19 @@ I wanted the site to feel calm and alive at the same time, the opposite of a sta
 
 - **Motion without noise.** Everything moves (blobs drifting, ripples spreading, particles rising) but slowly and softly, so it reads as ambience, not distraction.
 - **Color as meaning, not decoration.** Each life area gets its own color drawn from an actual mood, not a random palette:
-  - **Violet — About** — "the deep": who I am, underneath everything else
-  - **Rose — Career** — "the warmth": what moved me, and the people I've shown up for
-  - **Cobalt — Education** — "the clear": what I carry, the skills settled at the bottom
-  - **Gold — Projects** — "the shimmer": what I made, catching the light
+  - **Violet — About** ("who i am") — "the deep": who I am, beneath everything else
+  - **Rose — Experience** ("what moved me") — "the warmth": what moved me, and the people I've shown up for
+  - **Cobalt — Skill** ("what i carry") — "the clear": what I carry, the skills settled at the bottom
+  - **Gold — Projects** ("what i made") — "the shimmer": what I made, catching the light
 - **A closing note underneath the motion.** There's a small modal (triggered from a verse icon) that says the site is water in motion, but that stillness surfaces when you stop moving and let it settle, and that for me, that stillness comes from God, not from anything I built. That's the one honest, unbuilt thing in a site that is otherwise all custom-built animation. It's meant to be found, not forced on anyone, so it lives in an optional modal rather than the main flow.
 
 Visually, the type pairing (Fraunces for display type, Familjen Grotesk for body text, IBM Plex Mono for labels and data rows) is meant to feel like an editorial field notebook, precise and slightly scientific, sitting on top of something organic and fluid.
 
 ## How it's structured to browse
 
-- **Main screen:** four soft color "pools" sit over a canvas background, one per section (About, Career, Education, Projects). Hovering one highlights it; scrolling down while hovering "dives" into it.
+- **Main screen:** four soft color "pools" sit over a canvas background, one per section (About, Experience, Skill, Projects). Hovering one highlights it; scrolling down while hovering "dives" into it.
 - **Diving into a section:** the section's color spreads outward from the exact point you clicked, like paint released into water, while the ambient background blobs keep drifting underneath, untouched.
-- **Inside a section:** sub-nodes (e.g. under About: Name, Education, Contact) sit over a solid-colored background. Scrolling down on a highlighted sub-node opens its detail card; scrolling up at the top of a section swims back out to the main screen.
+- **Inside a section:** sub-nodes sit over a solid-colored background — About holds Name, Education, and Contact; Experience holds Peer Tutor, Korean Christian Club of PGH (president), and Media Team; Skill holds Design & Media, Development, and Languages & Stack; Projects holds PiTTime, MyPitt Redesign, and Bible Slide Generator. Scrolling down on a highlighted sub-node opens its detail card; scrolling up at the top of a section swims back out to the main screen.
 - **Detail cards** expand from the clicked point with a circular reveal (clip-path), starting from the top so the title surfaces first.
 - **Ambient life:** even when you're not doing anything, small droplets fall at the screen edges and splash into ripples, faint caustic light drifts across the surface, and tiny particles rise and fade, so the main screen never feels frozen.
 - **Cursor glow:** a soft light follows the cursor with real motion physics (it lags slightly behind, stretches in the direction of travel, and pulses on click) rather than snapping to the pointer.
