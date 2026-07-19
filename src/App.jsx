@@ -845,7 +845,7 @@ export default function App() {
   }
   function keepLockAlive() { return gestureLock; }
 
-  window.addEventListener('wheel', (e) => {
+  function handleWheelGesture(e) {
     // 마우스가 안 움직여도 마지막 좌표로 hover 상태(hotNode/subHot)를 새로 계산
     // (hotNode/subHot은 원래 mousemove에서만 갱신되는데, 스크롤 진입 로직이 이 값에 의존하다 보니
     //  마우스를 안 움직이면 스크롤해도 아무 반응이 없는 것처럼 보였음)
@@ -959,7 +959,30 @@ export default function App() {
     // 그 외 스크롤은 막음 (한 화면 고정)
     e.preventDefault();
     scrollAccum = 0;
+  }
+  window.addEventListener('wheel', handleWheelGesture, { passive: false });
+
+  // Touch swipe support (mobile): converts vertical touch drags into the same deltaY gesture logic as wheel (desktop wheel behavior untouched)
+  let touchActive = false, touchLastY = 0;
+  window.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    touchActive = true;
+    touchLastY = t.clientY;
+    mouse.x = t.clientX; mouse.y = t.clientY; mouse.active = true;
+    updateHotNode(t.clientX, t.clientY);
+  }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (!touchActive) return;
+    const t = e.touches[0];
+    const deltaY = (touchLastY - t.clientY) * 1.6;
+    touchLastY = t.clientY;
+    mouse.x = t.clientX; mouse.y = t.clientY;
+    handleWheelGesture({ deltaY, preventDefault: () => { if (e.cancelable) e.preventDefault(); } });
   }, { passive: false });
+  window.addEventListener('touchend', () => {
+    touchActive = false; mouse.active = false;
+  }, { passive: true });
+
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (detailOpen) { closeDetail(); return; }
