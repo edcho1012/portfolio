@@ -700,7 +700,7 @@ export default function App() {
       ]
     },
     'proj-mypitt': {
-      label: 'project', title: 'MyPitt Redesign',
+      label: 'project', title: 'MyPitt Redesign', horizontal: true,
       cards: [
         { type: 'intro', text: "A team redesign of Pitt's student portal for a design course. The original myPitt is a cluttered, one size fits all directory: essential tools are buried under visual noise, and the search often misses what students actually mean, pushing them to Google just to find Pitt services.<br><br>We reimagined it as a simple hub for new users: a home screen of large, iOS inspired app icons with favorites, predictive search, category browsing, and a \u201cStart Here\u201d onboarding page with an AI assistant that points students to the right service." },
         { type: 'rows', rows: [
@@ -749,7 +749,7 @@ export default function App() {
     const color = sub.dataset.color;
     let html = data.label ? `<div class="d-label">${data.label}</div>` : '';
     html += `<div class="d-title">${data.title}</div>`;
-    html += `<div class="d-cards">`;
+    html += `<div class="d-cards${data.horizontal ? ' d-h' : ''}">`;
     (data.cards || []).forEach(card => {
       html += `<div class="d-card">`;
       if (card.type === 'intro') {
@@ -789,9 +789,11 @@ export default function App() {
       html += `</div>`;
     });
     html += `</div>`;
-    html += `<div class="d-exit-hint">scroll up to surface ↑</div>`;
+    html += data.horizontal
+      ? `<div class="d-exit-hint">scroll to explore → · scroll back at the start to surface</div>`
+      : `<div class="d-exit-hint">scroll up to surface ↑</div>`;
     detailInner.innerHTML = html;
-    detail.scrollTop = 0;   // 항상 제목부터 보이게
+    detail.scrollTop = 0; detail.scrollLeft = 0;   // 항상 제목부터 보이게
     lockGesture();          // 여는 스와이프 관성으로 바로 닫히지 않게
     // 배경색을 일정 비율로 눌러서 흰 텍스트/카드 대비 확보 (색끼리 차이는 그대로 유지)
     const rgb = color.split(',').map(n => parseInt(n.trim(), 10));
@@ -972,6 +974,48 @@ export default function App() {
     e.preventDefault();
     scrollAccum = 0;
   }
+  // 가로형 상세(MyPitt 등): 휠/트랙패드를 가로 스크롤로 바꾸고, 맨 왼쪽에서 더 밀면 나가기
+  // (capture 단계에서 먼저 처리하고 기존 세로형 핸들러로는 넘기지 않음. 모바일(≤760px)은 기존 세로 동작 유지)
+  let hExitAccum = 0, hReachedStart = false;
+  function handleHorizontalWheel(e) {
+    if (!detailOpen || window.innerWidth <= 760) return;
+    if (!detail.querySelector('.d-cards.d-h')) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (detailPinTop) return;   // 여는 애니메이션 중엔 무시
+    const now = performance.now();
+    const gap = now - lastWheelTs;
+    lastWheelTs = now;
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    lastWheelDelta = d;
+    // 진입 스와이프의 관성 차단
+    if (detailEntryInertia) {
+      if (gap > 120 || d < 0) { detailEntryInertia = false; }
+      else return;
+    }
+    if (d > 0) {
+      hExitAccum = 0; hReachedStart = false;
+      detail.scrollLeft += d;
+      return;
+    }
+    if (d === 0) return;
+    // 왼쪽으로: 아직 앞에 내용이 있으면 되돌아가기
+    if (detail.scrollLeft > 2) {
+      detail.scrollLeft = Math.max(0, detail.scrollLeft + d);
+      if (detail.scrollLeft <= 2) { hReachedStart = true; hExitAccum = 0; }
+      return;
+    }
+    // 이미 맨 앞: 새 제스처로 더 밀면 나가기
+    if (gap > 140) hReachedStart = false;
+    if (hReachedStart) return;
+    if (Math.abs(d) < 6) return;
+    hExitAccum += -d;
+    if (hExitAccum > 26) {
+      hExitAccum = 0; hReachedStart = false;
+      closeDetail(); lockGesture();
+    }
+  }
+  window.addEventListener('wheel', handleHorizontalWheel, { passive: false, capture: true });
   window.addEventListener('wheel', handleWheelGesture, { passive: false });
 
   // Touch swipe support (mobile): converts vertical touch drags into the same deltaY gesture logic as wheel (desktop wheel behavior untouched)

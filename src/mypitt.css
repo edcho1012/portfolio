@@ -1,4 +1,6 @@
-/* MyPitt Redesign case study: image cards */
+/* MyPitt Redesign case study */
+
+/* image cards */
 .d-card:has(> .d-img) {
   padding: 0;
   overflow: hidden;
@@ -15,4 +17,73 @@
   font-size: 12px;
   line-height: 1.5;
   opacity: 0.72;
+}
+
+/* horizontal detail layout (desktop only, mobile keeps the vertical layout) */
+@media (min-width: 761px) {
+  .detail:has(.d-cards.d-h) {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .detail:has(.d-cards.d-h)::-webkit-scrollbar {
+    display: none;
+  }
+
+  .detail:has(.d-cards.d-h) .detail-inner {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    max-width: none;
+    margin: 0;
+    padding: 0 10vw 0 6vw;
+  }
+
+  /* title and hint stay pinned to the left while cards slide by */
+  .detail:has(.d-cards.d-h) .d-label,
+  .detail:has(.d-cards.d-h) .d-title,
+  .detail:has(.d-cards.d-h) .d-exit-hint {
+    position: sticky;
+    left: 6vw;
+    align-self: flex-start;
+    width: max-content;
+    max-width: calc(100vw - 12vw);
+  }
+  .detail:has(.d-cards.d-h) .d-exit-hint {
+    text-align: left;
+    margin-top: 1.6rem;
+  }
+
+  .detail-inner .d-cards.d-h {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .detail-inner .d-cards.d-h .d-card {
+    flex: 0 0 auto;
+    width: 340px;
+  }
+  .detail-inner .d-cards.d-h .d-card:has(.d-intro) {
+    width: 420px;
+  }
+  .detail-inner .d-cards.d-h .d-card:has(.d-tags) {
+    width: 340px;
+  }
+
+  /* images keep their ratio and fit the viewport height */
+  .detail-inner .d-cards.d-h .d-card:has(> .d-img) {
+    width: auto;
+  }
+  .detail-inner .d-cards.d-h .d-img {
+    width: auto;
+    height: auto;
+    max-width: clamp(420px, 42vw, 720px);
+    max-height: 52vh;
+  }
+  /* caption never makes the card wider than its image */
+  .detail-inner .d-cards.d-h .d-caption {
+    width: 0;
+    min-width: 100%;
+  }
 }
