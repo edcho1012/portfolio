@@ -692,7 +692,7 @@ export default function App() {
         { type: 'intro', text: "I led it end to end: planning, design, and full-stack development, working alongside AI as a coding partner throughout. Every screen was a question of how to make the flow feel effortless, so people could just stay and belong." },
         { type: 'rows', rows: [
           { k: 'site', v: '<a href="https://pittime.vercel.app" target="_blank" rel="noopener">pittime.vercel.app</a>' },
-          { k: 'github', v: '<a href="https://github.com/edcho1012/pitttime" target="_blank" rel="noopener">github.com/edcho1012/pitttime</a>' },
+          { k: 'github', v: '<a href="https://github.com/edcho1012/pittime-showcase" target="_blank" rel="noopener">github.com/edcho1012/pitttime</a>' },
           { k: 'role', v: 'Planning · Design · Full-stack Development' },
         ]},
         { type: 'tags', label: 'what i built', tags: ['Email verification (@pitt.edu)','JWT sessions + remember-me','Community board with categories','Anonymous numbering','Threaded comments','Upvote / downvote','Real-time polling','Admin dashboard','Mobile hamburger nav'] },
