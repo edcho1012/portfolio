@@ -1,5 +1,13 @@
 /* MyPitt Redesign case study */
 
+/* links need a box so the jelly hover transform applies */
+.detail-inner a {
+  display: inline-block;
+}
+.detail-inner a.d-logo {
+  display: inline-flex;
+}
+
 /* image cards */
 .d-card:has(> .d-img) {
   padding: 0;

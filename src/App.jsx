@@ -974,48 +974,92 @@ export default function App() {
     e.preventDefault();
     scrollAccum = 0;
   }
-  // 가로형 상세(MyPitt 등): 휠/트랙패드를 가로 스크롤로 바꾸고, 맨 왼쪽에서 더 밀면 나가기
-  // (capture 단계에서 먼저 처리하고 기존 세로형 핸들러로는 넘기지 않음. 모바일(≤760px)은 기존 세로 동작 유지)
-  let hExitAccum = 0, hReachedStart = false;
-  function handleHorizontalWheel(e) {
-    if (!detailOpen || window.innerWidth <= 760) return;
-    if (!detail.querySelector('.d-cards.d-h')) return;
+  // 상세 화면 스크롤 (세로/가로 공통): capture 단계에서 먼저 처리하고 기존 핸들러로는 넘기지 않음
+  // - 가로형(.d-h, 데스크톱): 휠을 가로 스크롤로 변환
+  // - 맨 앞(위/왼쪽)에서 더 밀면 나가기. 같은 제스처로 맨 앞에 도달했다면 조금 더 세게 밀어야 나감
+  let hExitAccum = 0, hReachedInGesture = false;
+  function handleDetailWheel(e) {
+    if (!detailOpen) return;
     e.preventDefault();
     e.stopImmediatePropagation();
     if (detailPinTop) return;   // 여는 애니메이션 중엔 무시
+    const horiz = window.innerWidth > 760 && !!detail.querySelector('.d-cards.d-h');
     const now = performance.now();
     const gap = now - lastWheelTs;
     lastWheelTs = now;
-    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    let d = (horiz && Math.abs(e.deltaX) > Math.abs(e.deltaY)) ? e.deltaX : e.deltaY;
+    if (e.deltaMode === 1) d *= 16;   // 줄 단위(Firefox)를 px로
     lastWheelDelta = d;
     // 진입 스와이프의 관성 차단
     if (detailEntryInertia) {
       if (gap > 120 || d < 0) { detailEntryInertia = false; }
       else return;
     }
-    if (d > 0) {
-      hExitAccum = 0; hReachedStart = false;
-      detail.scrollLeft += d;
+    if (gap > 300) hExitAccum = 0;
+    const pos = horiz ? detail.scrollLeft : detail.scrollTop;
+    const max = horiz ? detail.scrollWidth - detail.clientWidth : detail.scrollHeight - detail.clientHeight;
+    const setPos = (v) => { if (horiz) detail.scrollLeft = v; else detail.scrollTop = v; };
+    if (d > 0) {            // 앞으로(아래/오른쪽): 자유 스크롤
+      hExitAccum = 0; hReachedInGesture = false;
+      setPos(Math.min(max, pos + d));
       return;
     }
     if (d === 0) return;
-    // 왼쪽으로: 아직 앞에 내용이 있으면 되돌아가기
-    if (detail.scrollLeft > 2) {
-      detail.scrollLeft = Math.max(0, detail.scrollLeft + d);
-      if (detail.scrollLeft <= 2) { hReachedStart = true; hExitAccum = 0; }
+    if (pos > 2) {          // 뒤로(위/왼쪽): 아직 앞에 내용이 있으면 되돌아가기
+      const next = Math.max(0, pos + d);
+      setPos(next);
+      if (next <= 2) { hReachedInGesture = true; hExitAccum = 0; }
       return;
     }
-    // 이미 맨 앞: 새 제스처로 더 밀면 나가기
-    if (gap > 140) hReachedStart = false;
-    if (hReachedStart) return;
-    if (Math.abs(d) < 6) return;
+    // 이미 맨 앞: 더 밀면 나가기
+    if (gap > 140) hReachedInGesture = false;
+    if (!hReachedInGesture && Math.abs(d) < 6) return;   // 관성 꼬리(작은 값) 무시
     hExitAccum += -d;
-    if (hExitAccum > 26) {
-      hExitAccum = 0; hReachedStart = false;
+    if (hExitAccum > (hReachedInGesture ? 160 : 26)) {
+      hExitAccum = 0; hReachedInGesture = false;
       closeDetail(); lockGesture();
     }
   }
-  window.addEventListener('wheel', handleHorizontalWheel, { passive: false, capture: true });
+  window.addEventListener('wheel', handleDetailWheel, { passive: false, capture: true });
+  // ESC로도 상세 화면 나가기
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && detailOpen) { closeDetail(); lockGesture(); }
+  });
+
+  // 링크 젤리 효과: 호버하면 탱글하게 커졌다 안착, 벗어나면 살짝 튀기며 복귀
+  const JELLY_SEL = '.detail-inner a, .detail-back';
+  function jellyAnim(el, enter) {
+    const cur = getComputedStyle(el).transform;
+    const from = (cur && cur !== 'none') ? cur : 'scale(1)';
+    const frames = enter
+      ? [
+          { transform: from },
+          { transform: 'scale(1.18, 0.88)', offset: 0.22 },
+          { transform: 'scale(0.94, 1.09)', offset: 0.45 },
+          { transform: 'scale(1.1, 0.96)', offset: 0.68 },
+          { transform: 'scale(1.06, 1.03)', offset: 0.85 },
+          { transform: 'scale(1.07)' },
+        ]
+      : [
+          { transform: from },
+          { transform: 'scale(0.95, 1.05)', offset: 0.35 },
+          { transform: 'scale(1.02, 0.98)', offset: 0.68 },
+          { transform: 'scale(1)' },
+        ];
+    const anim = el.animate(frames, { duration: enter ? 640 : 420, easing: 'ease-out', fill: 'forwards' });
+    if (el._jelly) el._jelly.cancel();
+    el._jelly = anim;
+  }
+  document.addEventListener('mouseover', (e) => {
+    const el = e.target.closest && e.target.closest(JELLY_SEL);
+    if (!el || (e.relatedTarget && el.contains(e.relatedTarget))) return;
+    jellyAnim(el, true);
+  });
+  document.addEventListener('mouseout', (e) => {
+    const el = e.target.closest && e.target.closest(JELLY_SEL);
+    if (!el || (e.relatedTarget && el.contains(e.relatedTarget))) return;
+    jellyAnim(el, false);
+  });
   window.addEventListener('wheel', handleWheelGesture, { passive: false });
 
   // Touch swipe support (mobile): converts vertical touch drags into the same deltaY gesture logic as wheel (desktop wheel behavior untouched)
