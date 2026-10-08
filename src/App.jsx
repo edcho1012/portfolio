@@ -976,7 +976,7 @@ export default function App() {
   }
   // 상세 화면 스크롤 (세로/가로 공통): capture 단계에서 먼저 처리하고 기존 핸들러로는 넘기지 않음
   // - 가로형(.d-h, 데스크톱): 휠을 가로 스크롤로 변환
-  // - 맨 앞(위/왼쪽)에서 더 밀면 나가기. 같은 제스처로 맨 앞에 도달했다면 조금 더 세게 밀어야 나감
+  // - 맨 앞(위/왼쪽)에 도달한 뒤, 잠깐 멈추고 다시 밀면 나가기 (한 제스처로 한 번에 올리는 것만으로는 안 나감)
   let hExitAccum = 0, hReachedInGesture = false;
   function handleDetailWheel(e) {
     if (!detailOpen) return;
@@ -1013,9 +1013,10 @@ export default function App() {
     }
     // 이미 맨 앞: 더 밀면 나가기
     if (gap > 140) hReachedInGesture = false;
-    if (!hReachedInGesture && Math.abs(d) < 6) return;   // 관성 꼬리(작은 값) 무시
+    if (hReachedInGesture) return;                       // 방금 스크롤로 맨 앞에 도달한 제스처면 안 나감 (한 번에 크게 올려도 바로 안 나가게)
+    if (Math.abs(d) < 6) return;                         // 관성 꼬리(작은 값) 무시
     hExitAccum += -d;
-    if (hExitAccum > (hReachedInGesture ? 160 : 26)) {
+    if (hExitAccum > 26) {
       hExitAccum = 0; hReachedInGesture = false;
       closeDetail(); lockGesture();
     }
@@ -1026,7 +1027,7 @@ export default function App() {
     if (e.key === 'Escape' && detailOpen) { closeDetail(); lockGesture(); }
   });
 
-  // 링크 젤리 효과: 호버하면 탱글하게 커졌다 안착, 벗어나면 살짝 튀기며 복귀
+  // 링크 호버 효과: 아주 살짝 커졌다 안착, 벗어나면 부드럽게 복귀
   const JELLY_SEL = '.detail-inner a, .detail-back';
   function jellyAnim(el, enter) {
     const cur = getComputedStyle(el).transform;
@@ -1034,19 +1035,14 @@ export default function App() {
     const frames = enter
       ? [
           { transform: from },
-          { transform: 'scale(1.18, 0.88)', offset: 0.22 },
-          { transform: 'scale(0.94, 1.09)', offset: 0.45 },
-          { transform: 'scale(1.1, 0.96)', offset: 0.68 },
-          { transform: 'scale(1.06, 1.03)', offset: 0.85 },
-          { transform: 'scale(1.07)' },
+          { transform: 'scale(1.05)', offset: 0.55 },
+          { transform: 'scale(1.03)' },
         ]
       : [
           { transform: from },
-          { transform: 'scale(0.95, 1.05)', offset: 0.35 },
-          { transform: 'scale(1.02, 0.98)', offset: 0.68 },
           { transform: 'scale(1)' },
         ];
-    const anim = el.animate(frames, { duration: enter ? 640 : 420, easing: 'ease-out', fill: 'forwards' });
+    const anim = el.animate(frames, { duration: enter ? 360 : 240, easing: 'ease-out', fill: 'forwards' });
     if (el._jelly) el._jelly.cancel();
     el._jelly = anim;
   }
