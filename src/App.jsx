@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import './portfolio.css';
+import './mypitt.css';
 
 // 이 컴포넌트는 원본 vanilla JS 포트폴리오 사이트의 로직을 거의 그대로
 // useEffect 안에 감싼 것입니다. 캔버스 애니메이션, 제스처 누적, 오디오
@@ -701,13 +702,21 @@ export default function App() {
     'proj-mypitt': {
       label: 'project', title: 'MyPitt Redesign',
       cards: [
-        { type: 'intro', text: "A team redesign of Pitt's student portal for a design course. The original myPitt is a cluttered, one-size-fits-all directory: essential tools are buried under visual noise, and the search often misses what students actually mean, pushing them to Google just to find Pitt services.<br><br>We reimagined it as a personalized \u201cIntelligent Hub\u201d: a modular, customizable dashboard in place of the static wall of links, with predictive search, iOS-inspired large icons, and a \u201cStart Here\u201d onboarding page for new students." },
+        { type: 'intro', text: "A team redesign of Pitt's student portal for a design course. The original myPitt is a cluttered, one size fits all directory: essential tools are buried under visual noise, and the search often misses what students actually mean, pushing them to Google just to find Pitt services.<br><br>We reimagined it as a simple hub for new users: a home screen of large, iOS inspired app icons with favorites, predictive search, category browsing, and a \u201cStart Here\u201d onboarding page with an AI assistant that points students to the right service." },
         { type: 'rows', rows: [
           { k: 'type', v: 'Team project (4 people) · design course' },
           { k: 'my role', v: 'UI / UX Design · built the Start Here page' },
-          { k: 'process', v: 'Interviews \u00b7 need-finding \u00b7 POVs & HMWs \u00b7 low-fi \u2192 hi-fi prototyping' },
+          { k: 'process', v: 'Interviews \u00b7 need finding \u00b7 POVs & HMWs \u00b7 low fi to hi fi prototyping \u00b7 peer heuristic evaluation' },
         ]},
-        { type: 'tags', label: 'key ideas', tags: ['Start Here onboarding','Predictive search','Customizable widgets','Role-based views','Reduced cognitive load'] },
+        { type: 'intro', text: "<b>Research and direction.</b> We interviewed three Pitt students across different years and majors about how they use MyPitt, Pitt CX, Duo, and the housing portal. The main insight was simple: students only know where to go if someone has already shown them, and new students have no one to ask.<br><br>From our POVs and HMW questions, such as how might we make Pitt websites more new user friendly, we combined our two strongest ideas: a Start Here page for incoming students, and clearer organization of services into simple categories. We also borrowed from iOS, using large recognizable icons in place of the text heavy lists of the original site.<br><br>The design supports three flows: onboarding through Start Here, browsing by category or search, and asking the AI assistant where to find a service." },
+        { type: 'image', src: import.meta.env.BASE_URL + 'mypitt/home.jpg', alt: 'MyPitt redesign home screen', caption: 'Home: large app icons with favorites, announcements, and a prompt that guides new users to Start Here' },
+        { type: 'intro', text: "<b>My contribution: designing Start Here.</b> I led the visual design of the Start Here page, including the size of each card, the spacing between them, and how the information is grouped. Apps and websites are split into two sections, and every card follows the same pattern of logo, name, and a short plain language description, so a new student can tell what a service is for before opening it. Cards share one size and one gap, so the two column layout reads as a single organized set, and the AI chat is pinned to the bottom right corner." },
+        { type: 'image', src: import.meta.env.BASE_URL + 'mypitt/start-here.jpg', alt: 'Start Here page with AI assistant', caption: 'Start Here: useful apps and websites with short descriptions, plus an AI assistant' },
+        { type: 'image', src: import.meta.env.BASE_URL + 'mypitt/search.jpg', alt: 'Predictive search results', caption: 'Predictive search suggests matching services as you type' },
+        { type: 'image', src: import.meta.env.BASE_URL + 'mypitt/categories.jpg', alt: 'Categories menu', caption: 'Categories: seven simple groups for browsing services' },
+        { type: 'intro', text: "<b>Feedback.</b> Another team ran a heuristic evaluation on our mid fi prototype and found three issues. The most serious was that the sidebar icons had no text labels, an accessibility problem. They also suggested a confirmation step before redirecting into an app, and a small logo alignment fix. This was a peer review, not testing with real students, but it pointed to details we had stopped noticing ourselves." },
+        { type: 'intro', text: "<b>Reflection.</b> Feedback shaped the design more than I expected, especially on accessibility. Our biggest limitation is that we tested with peers rather than real incoming students, so we cannot yet claim Start Here solves onboarding. With more time I would add more Pitt services, refine the layout and color system, and test Start Here with first year students." },
+        { type: 'tags', label: 'key ideas', tags: ['Start Here onboarding','Predictive search','Favorites','Category browsing','AI assistant','iOS inspired icons','Reduced cognitive load'] },
         { type: 'tags', label: 'tools', tags: ['Figma'] },
       ]
     },
@@ -751,6 +760,9 @@ export default function App() {
           html += `<div class="d-row"><div class="k">${r.k}</div><div class="v">${r.v}</div></div>`;
         });
         html += `</div>`;
+      } else if (card.type === 'image') {
+        html += `<img class="d-img" src="${card.src}" alt="${card.alt || ''}" loading="lazy">`;
+        if (card.caption) html += `<div class="d-caption">${card.caption}</div>`;
       } else if (card.type === 'tags') {
         if (card.label) html += `<div class="d-taglabel">${card.label}</div>`;
         html += `<div class="d-tags">`;
